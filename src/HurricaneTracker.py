@@ -56,18 +56,23 @@ for storm_season in range(2000,2004):
 # %% [markdown]
 # #### Select point features corresponding to a specific storm (season & name)
 # Create teh file object to the output csv
-#out_file = open(output_csv, 'w')
+out_file = open(output_csv, 'w')
 #Write header line
-#out_file.write('Storm_Season, Counties_Impacted\n')
+out_file.write('Storm_Season, Counties_Impacted\n')
 
 #Iterate through each season
 for storm_season in storm_dict.keys():
+
+    #initialize season storm counter
+    season_counter = 0
 
     #Get the list of storms in the season
     storm_names = storm_dict[storm_season]
 
     #Iterate through storm names
     for storm_name in storm_names:
+        #update status
+        print(f'Working on {storm_name} in {storm_season}')
 
         arcpy.analysis.Select(
             in_features=ibtracs_NA_points, 
@@ -91,6 +96,12 @@ for storm_season in storm_dict.keys():
         select_result = select_output.getOutput(0)
         #Count the selected counties
         county_count = int(arcpy.management.GetCount(select_result).getOutput(0))
-        print(storm_season, storm_name, county_count)
 
+        #Increment the season counter
+        season_counter += county_count
+
+    #Print out storm season and county count
+    out_file.write(f'{storm_season}, {season_counter}\n')
+
+out_file.close()
 # %%
